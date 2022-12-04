@@ -12,78 +12,88 @@ import java.util.*;
 
 public class Outlook implements MailClient {
 
-    private Map<String, Account> accounts = new HashMap<>();
+    private Map<String, Account> accountsByName = new HashMap<>();
+    private Map<String, Account> accountsByEmail = new HashMap<>();
+    private Map<Account, AccountFolder> accountsFolder = new HashMap<>();
 
     public Outlook() { }
 
     @Override
     public Account addNewAccount(String accountName, String email) {
-        ValidateString(accountName, email);
-        ValidateAccountDoesNotExists(accountName);
+        validateStrings(accountName, email);
+        validateAccountDoesNotExists(accountsByName, accountName);
+        validateAccountDoesNotExists(accountsByEmail, email);
 
         Account newAccount = new Account(email, accountName);
-        accounts.put(accountName, newAccount);
+        accountsByName.put(accountName, newAccount);
+        accountsByEmail.put(email, newAccount);
+        accountsFolder.put(newAccount, new AccountFolder());
 
         return newAccount;
     }
 
     @Override
     public void createFolder(String accountName, String path) {
+        validateStrings(accountName, path);
+        validateAccountExistsByName(accountName);
 
+        Account account = accountsByName.get(accountName);
+        accountsFolder.get(account).addFolder(path);
     }
 
     @Override
     public void addRule(String accountName, String folderPath, String ruleDefinition, int priority) {
+        validateStrings(accountName, folderPath, ruleDefinition);
+        validateAccountExistsByName(accountName);
+        Account account = accountsByName.get(accountName);
 
+        accountsFolder.get(account).addRule(ruleDefinition, folderPath, priority);
     }
 
     @Override
     public void receiveMail(String accountName, String mailMetadata, String mailContent) {
-        // TODO: FolderNotFoundException
-        ValidateString(accountName, mailMetadata, mailContent);
-        ValidateAccountExists(accountName);
+        validateStrings(accountName, mailMetadata, mailContent);
+        validateAccountExistsByName(accountName);
+        Account receiver = accountsByName.get(accountName);
+        Mail mail = Mail.of(accountsByEmail, mailMetadata, mailContent);
 
-
+        accountsFolder.get(receiver).addMail(mail);
     }
 
     @Override
     public Collection<Mail> getMailsFromFolder(String account, String folderPath) {
-        return null;
+        validateStrings(account, folderPath);
+        validateAccountExistsByName(account);
+        Account selectedAccount = accountsByName.get(account);
+
+        return accountsFolder.get(selectedAccount).getMails(folderPath);
     }
 
     @Override
     public void sendMail(String accountName, String mailMetadata, String mailContent) {
+        validateStrings(accountName, mailMetadata, mailContent);
+        mailMetadata = fillSenderField(accountName, mailMetadata);
+        List<String> recipients = getRecipientsFromMetadata(mailMetadata);
+        mailMetadata = fillSenderField(accountName, mailMetadata);
 
+        for (String receiverEmail : recipients) {
+            if (accountsByName.containsKey(receiverEmail)) {
+                String receiverName = accountsByEmail.get(receiverEmail).name();
+                receiveMail(receiverName, mailMetadata, mailContent);
+            }
+        }
     }
 
-    public Mail CreateMail(String metadata, String content) {
-        String line;
-        String subject = "";
-        Account account = new Account("1", "2");
-        Set<String> recipients = new HashSet<>();
-        LocalDateTime received = LocalDateTime.now();
-        DateTimeFormatter formatterLocalDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private List<String> getRecipientsFromMetadata(String metadata) {
+        List<String> recipients = new ArrayList<>();
+        try (BufferedReader bufferedReader = new BufferedReader(new StringReader(metadata))) {
 
-        try (StringReader stringReader = new StringReader(metadata);
-            BufferedReader bufferedReader = new BufferedReader(stringReader)) {
-
+            String line;
             while ((line = bufferedReader.readLine()) != null) {
-                int endIndexOfProperty = line.indexOf(':');
-                String property = line.substring(0, endIndexOfProperty);
-                String propertyContent = line.substring(endIndexOfProperty + 1).stripLeading();
-                switch (property) {
-                    case "sender":
-                        break;
-                    case "subject":
-                        subject = propertyContent;
-                        break;
-                    case "recipients":
-                        propertyContent.strip();
-                        recipients.addAll(List.of(propertyContent.split(",")));
-                        break;
-                    case "received":
-                        received = LocalDateTime.parse(propertyContent, formatterLocalDate);
-                        break;
+                if (line.startsWith("recipients:")) {
+                    line = line.replaceFirst("recipients:", "");
+                    recipients.addAll(List.of(line.split(",")));
+                    recipients.replaceAll(String::strip);
                 }
             }
         }
@@ -91,10 +101,19 @@ public class Outlook implements MailClient {
             throw new IllegalStateException("Error appeared while parsing the mail!");
         }
 
-        return new Mail(account, recipients, subject, content, received);
+        return recipients;
     }
 
-    private void ValidateString(String... params) {
+    private String fillSenderField(String senderName, String metaData) {
+
+        if (metaData.contains("sender:")) {
+            return metaData;
+        }
+
+        return metaData.concat(System.lineSeparator() + "sender: " + accountsByName.get(senderName).emailAddress());
+    }
+
+    private void validateStrings(String... params) {
         for (String string : params) {
             if (string == null || string.isBlank()) {
                 throw new IllegalArgumentException("Invalid parameter given");
@@ -102,15 +121,15 @@ public class Outlook implements MailClient {
         }
     }
 
-    private void ValidateAccountDoesNotExists(String accountName) {
-        if (accounts.containsKey(accountName)) {
+    private void validateAccountDoesNotExists(Map<String, Account> accounts, String key) {
+        if (accounts.containsKey(key)) {
             throw new AccountAlreadyExistsException();
         }
     }
 
-    private void ValidateAccountExists(String accountName) {
-        if (!accounts.containsKey(accountName)) {
-            throw new AccountNotFoundException();
+    private void validateAccountExistsByName(String accountName) {
+        if (!accountsByName.containsKey(accountName)) {
+            throw new AccountNotFoundException(accountName + " has not been found!");
         }
     }
 }
