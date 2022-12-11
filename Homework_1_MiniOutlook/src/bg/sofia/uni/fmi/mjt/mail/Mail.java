@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public record Mail(Account sender, Set<String> recipients, String subject, String body, LocalDateTime received) {
 
@@ -26,8 +28,16 @@ public record Mail(Account sender, Set<String> recipients, String subject, Strin
                 switch (property) {
                     case "sender" ->
                             account = new Account(propertyContent, accounts.get(propertyContent).name());
+
                     case "subject" -> subject = propertyContent;
-                    case "recipients" -> recipients.addAll(List.of(propertyContent.split(",")));
+
+                    case "recipients" -> {
+                        String[] recipientsList = propertyContent.split(",");
+                        for (String recipient : recipientsList) {
+                            recipients.add(recipient.strip());
+                        }
+                    }
+
                     case "received" -> received = LocalDateTime.parse(propertyContent, formatterLocalDate);
                 }
             }

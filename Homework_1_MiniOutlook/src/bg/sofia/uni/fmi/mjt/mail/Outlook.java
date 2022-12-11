@@ -6,28 +6,31 @@ import bg.sofia.uni.fmi.mjt.mail.exceptions.AccountNotFoundException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class Outlook implements MailClient {
 
-    private Map<String, Account> accountsByName = new HashMap<>();
-    private Map<String, Account> accountsByEmail = new HashMap<>();
-    private Map<Account, AccountFolder> accountsFolder = new HashMap<>();
+    private final Map<String, Account> accountsByName = new HashMap<>();
+    private final Map<String, Account> accountsByEmail = new HashMap<>();
+    private final Map<Account, AccountFolder> accountsFolder = new HashMap<>();
 
     public Outlook() { }
 
     @Override
     public Account addNewAccount(String accountName, String email) {
         validateStrings(accountName, email);
-        validateAccountDoesNotExists(accountsByName, accountName);
-        validateAccountDoesNotExists(accountsByEmail, email);
+        validateAccountDoesNotExist(accountsByName, accountName);
+        validateAccountDoesNotExist(accountsByEmail, email);
 
         Account newAccount = new Account(email, accountName);
         accountsByName.put(accountName, newAccount);
         accountsByEmail.put(email, newAccount);
-        accountsFolder.put(newAccount, new AccountFolder());
+        accountsFolder.put(newAccount, new AccountFolder(newAccount));
 
         return newAccount;
     }
@@ -72,16 +75,20 @@ public class Outlook implements MailClient {
     @Override
     public void sendMail(String accountName, String mailMetadata, String mailContent) {
         validateStrings(accountName, mailMetadata, mailContent);
+        validateAccountExistsByName(accountName);
+
         mailMetadata = fillSenderField(accountName, mailMetadata);
         List<String> recipients = getRecipientsFromMetadata(mailMetadata);
         mailMetadata = fillSenderField(accountName, mailMetadata);
 
         for (String receiverEmail : recipients) {
-            if (accountsByName.containsKey(receiverEmail)) {
+            if (accountsByEmail.containsKey(receiverEmail)) {
                 String receiverName = accountsByEmail.get(receiverEmail).name();
                 receiveMail(receiverName, mailMetadata, mailContent);
             }
         }
+
+        receiveMail(accountName, mailMetadata, mailContent);
     }
 
     private List<String> getRecipientsFromMetadata(String metadata) {
@@ -94,6 +101,7 @@ public class Outlook implements MailClient {
                     line = line.replaceFirst("recipients:", "");
                     recipients.addAll(List.of(line.split(",")));
                     recipients.replaceAll(String::strip);
+                    break;
                 }
             }
         }
@@ -121,7 +129,7 @@ public class Outlook implements MailClient {
         }
     }
 
-    private void validateAccountDoesNotExists(Map<String, Account> accounts, String key) {
+    private void validateAccountDoesNotExist(Map<String, Account> accounts, String key) {
         if (accounts.containsKey(key)) {
             throw new AccountAlreadyExistsException();
         }
