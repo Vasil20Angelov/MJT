@@ -1,7 +1,5 @@
 package bg.sofia.uni.fmi.mjt.netflix;
 
-import jdk.jshell.spi.ExecutionControl;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -67,6 +65,7 @@ public class NetflixRecommender {
      */
     public Content getTheLongestMovie() {
         return contents.stream()
+                .filter(x -> x.type() == ContentType.MOVIE)
                 .max(Comparator.comparing(Content::runtime))
                 .orElseThrow(NoSuchElementException::new);
     }
@@ -107,7 +106,7 @@ public class NetflixRecommender {
         }
 
         return contents.stream()
-                .sorted(Comparator.comparing(Content::getWeightedRating))
+                .sorted(Comparator.comparing(Content::getWeightedRating).reversed())
                 .limit(n)
                 .toList();
     }
@@ -123,12 +122,10 @@ public class NetflixRecommender {
      * @return the sorted list of content similar to the specified one.
      */
     public List<Content> getSimilarContent(Content content) {
-//        return contents.stream()
-//                .filter(x -> x.type().equals(content.type()))
-//                .sorted(Comparator.comparing(Content::similarity(content)).reversed())
-//                .toList();
-
-        return new LinkedList<>();
+        return contents.stream()
+                .filter(x -> x.type().equals(content.type()))
+                .sorted(Comparator.comparing(content::similarity).reversed())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -145,7 +142,7 @@ public class NetflixRecommender {
                         .map(word -> word.toLowerCase())
                         .toList()
                         .containsAll(keywordsList))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toUnmodifiableSet());
     }
 
 }

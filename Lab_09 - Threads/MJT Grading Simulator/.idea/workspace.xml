@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9713509e-77ba-4351-994c-2412a279da94" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/lab8.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/production/Lab_08 - Lambdas-And-Stream-API/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/production/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/Content.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/production/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/Content.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/production/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/ContentType.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/production/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/ContentType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/production/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/NetflixRecommender.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/production/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/NetflixRecommender.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/production/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/Token.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/production/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/Token.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/test/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/ContentTest$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/test/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/ContentTest$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/test/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/ContentTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/test/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/ContentTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/test/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/NetflixRecommenderTest$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/test/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/NetflixRecommenderTest$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/test/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/NetflixRecommenderTest$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/test/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/NetflixRecommenderTest$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/test/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/NetflixRecommenderTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/out/test/Lab_08 - Lambdas-And-Stream-API/bg/sofia/uni/fmi/mjt/netflix/NetflixRecommenderTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/src/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/src/bg/sofia/uni/fmi/mjt/netflix/Content.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/src/bg/sofia/uni/fmi/mjt/netflix/Content.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/src/bg/sofia/uni/fmi/mjt/netflix/NetflixRecommender.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/src/bg/sofia/uni/fmi/mjt/netflix/NetflixRecommender.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/test/bg/sofia/uni/fmi/mjt/netflix/ContentTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/test/bg/sofia/uni/fmi/mjt/netflix/ContentTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/test/bg/sofia/uni/fmi/mjt/netflix/NetflixRecommenderTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../Lab_08 - Lambdas-And-Stream-API/test/bg/sofia/uni/fmi/mjt/netflix/NetflixRecommenderTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Record" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2J12Cy8lPnvaVulSfaMv8xwMX8r" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Downloaded.Files.Path.Enabled": "true",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/User/Desktop/MJT/Lab_08 - Lambdas-And-Stream-API",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "org.infernus.idea.checkstyle.CheckStyleConfigurable"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\User\Desktop\MJT" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="bg.sofia.uni.fmi.mjt.grading.simulator" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.All in MJT Grading Simulator">
+    <configuration name="All in MJT Grading Simulator" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Lab_09 - Threads" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AssistantTest.testRunFinishesInTimeAndUpdatesCount" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Lab_09 - Threads" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="bg.sofia.uni.fmi.mjt.grading.simulator.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="bg.sofia.uni.fmi.mjt.grading.simulator" />
+      <option name="MAIN_CLASS_NAME" value="bg.sofia.uni.fmi.mjt.grading.simulator.AssistantTest" />
+      <option name="METHOD_NAME" value="testRunFinishesInTimeAndUpdatesCount" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CodePosterGraderTest.testFullClassExecution" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Lab_09 - Threads" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="bg.sofia.uni.fmi.mjt.grading.simulator.grader.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="bg.sofia.uni.fmi.mjt.grading.simulator.grader" />
+      <option name="MAIN_CLASS_NAME" value="bg.sofia.uni.fmi.mjt.grading.simulator.grader.CodePosterGraderTest" />
+      <option name="METHOD_NAME" value="testFullClassExecution" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="StudentTest.testRunFinishesInTimeAndUpdates" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Lab_09 - Threads" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="bg.sofia.uni.fmi.mjt.grading.simulator.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="bg.sofia.uni.fmi.mjt.grading.simulator" />
+      <option name="MAIN_CLASS_NAME" value="bg.sofia.uni.fmi.mjt.grading.simulator.StudentTest" />
+      <option name="METHOD_NAME" value="testRunFinishesInTimeAndUpdates" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="bg.sofia.uni.fmi.mjt.grading.simulator in MJT Grading Simulator" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Lab_09 - Threads" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="bg.sofia.uni.fmi.mjt.grading.simulator.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="bg.sofia.uni.fmi.mjt.grading.simulator" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="Lab_09 - Threads" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="Lab_09 - Threads" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.All in MJT Grading Simulator" />
+        <item itemvalue="JUnit.bg.sofia.uni.fmi.mjt.grading.simulator in MJT Grading Simulator" />
+        <item itemvalue="JUnit.AssistantTest.testRunFinishesInTimeAndUpdatesCount" />
+        <item itemvalue="JUnit.CodePosterGraderTest.testFullClassExecution" />
+        <item itemvalue="JUnit.StudentTest.testRunFinishesInTimeAndUpdates" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9713509e-77ba-4351-994c-2412a279da94" name="Changes" comment="" />
+      <created>1671231146148</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1671231146148</updated>
+      <workItem from="1671231147543" duration="3578000" />
+      <workItem from="1671745704322" duration="5515000" />
+      <workItem from="1671820767451" duration="4792000" />
+      <workItem from="1671827864032" duration="78000" />
+      <workItem from="1671828149962" duration="630000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/MJT_Grading_Simulator$All_in_MJT_Grading_Simulator.ic" NAME="All in MJT Grading Simulator Coverage Results" MODIFIED="1671827019868" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/MJT_Grading_Simulator$bg_sofia_uni_fmi_mjt_grading_simulator_in_MJT_Grading_Simulator.ic" NAME="bg.sofia.uni.fmi.mjt.grading.simulator in MJT Grading Simulator Coverage Results" MODIFIED="1671827455639" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>bg.sofia.uni.fmi.mjt.grading.simulator.*</FILTER>
+    </SUITE>
+  </component>
+</project>

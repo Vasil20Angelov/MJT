@@ -52,9 +52,9 @@ public record Content(String id, String title, ContentType type, String descript
         return (votes / (votes + constant)) * avr + (constant / (votes + constant)) * score;
     }
 
-    public long similarity(Content content) {
-        return genres.stream()
-                .filter(g -> content.genres.contains(g))
-                .count();
+    public int similarity(Content content) {
+        return (int) genres.stream()
+                        .filter(content.genres::contains)
+                        .count();
     }
 }
