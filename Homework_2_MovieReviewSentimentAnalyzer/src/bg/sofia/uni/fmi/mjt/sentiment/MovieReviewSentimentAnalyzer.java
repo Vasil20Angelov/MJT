@@ -1,17 +1,22 @@
 package bg.sofia.uni.fmi.mjt.sentiment;
 
-import bg.sofia.uni.fmi.mjt.sentiment.reviewData.ReviewWordsRepository;
-import bg.sofia.uni.fmi.mjt.sentiment.reviewData.StopwordsRepository;
+import bg.sofia.uni.fmi.mjt.sentiment.utils.factories.ReviewWordsFactory;
+import bg.sofia.uni.fmi.mjt.sentiment.utils.ScoreData;
+import bg.sofia.uni.fmi.mjt.sentiment.utils.factories.StopwordsFactory;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static bg.sofia.uni.fmi.mjt.sentiment.utils.factories.ReviewWordsFactory.WORD_SEPARATOR_REGEX;
 
 public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
-
-    private static final String WORD_SEPARATOR_REGEX = "[\\p{IsPunctuation}\\s]+";
 
     private static final List<String> SCORE_NAMES  = new ArrayList<>() {
         {
@@ -23,14 +28,18 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
         }
     };
 
+    private static final int SENTIMENT_LOWER_BOUNDARY = 0;
+    private static final int SENTIMENT_UPPER_BOUNDARY = 4;
+
     private final Set<String> stopwords;
-    private final ReviewWordsRepository reviewWordsRepository;
+    private final Map<String, ScoreData> reviewWords;
     private final Writer reviewsOut;
+
 
     public MovieReviewSentimentAnalyzer(Reader stopwordsIn, Reader reviewsIn, Writer reviewsOut) {
         this.reviewsOut = reviewsOut;
-        stopwords = StopwordsRepository.getStopwords(stopwordsIn);
-        reviewWordsRepository = new ReviewWordsRepository(reviewsIn, stopwords);
+        stopwords = StopwordsFactory.create(stopwordsIn);
+        reviewWords = ReviewWordsFactory.create(reviewsIn, stopwords);
     }
 
     @Override
@@ -39,17 +48,19 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
             return -1;
         }
 
-        String[] words = review.split(WORD_SEPARATOR_REGEX);
         double score = 0.0;
         int nonStopwords = 0;
+        String[] words = review.split(WORD_SEPARATOR_REGEX);
+
         for (String word : words) {
-            if (!stopwords.contains(word)) {
-                score += reviewWordsRepository.getWordSentiment(word);
+            String convertedWord = word.strip().toLowerCase();
+            if (!stopwords.contains(convertedWord)) {
+                score += getWordSentiment(convertedWord);
                 nonStopwords++;
             }
         }
 
-        return nonStopwords != 0 ? score / nonStopwords : 0.0;
+        return nonStopwords != 0 ? score / nonStopwords : -1;
     }
 
     @Override
@@ -58,6 +69,7 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
         if (roundedValue == -1) {
             return "unknown";
         }
+
         return SCORE_NAMES.get(roundedValue);
     }
 
@@ -67,7 +79,8 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
             return -1;
         }
 
-        return reviewWordsRepository.getWordSentiment(word);
+        ScoreData scoreData = reviewWords.get(word.strip().toLowerCase());
+        return scoreData == null ? -1 : scoreData.getScore();
     }
 
     @Override
@@ -76,36 +89,97 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
             return -1;
         }
 
-        return reviewWordsRepository.getWordFrequency(word);
+        word = word.strip().toLowerCase();
+        if (!reviewWords.containsKey(word)) {
+            return 0;
+        }
+
+        return reviewWords.get(word).getOccurrences();
     }
 
     @Override
     public List<String> getMostFrequentWords(int n) {
-        return reviewWordsRepository.getMostFrequentWords(n);
+        assertParameterIsNotNegative(n);
+
+        return reviewWords.entrySet()
+                .stream()
+                .sorted(Comparator.comparingInt(entry ->
+                        ((Map.Entry<String, ScoreData>)entry).getValue().getOccurrences()).reversed())
+                .map(Map.Entry::getKey)
+                .limit(n)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<String> getMostPositiveWords(int n) {
-        return reviewWordsRepository.getMostPositiveWords(n);
+        assertParameterIsNotNegative(n);
+
+        return reviewWords.entrySet()
+                .stream()
+                .sorted(Comparator.comparingDouble(entry ->
+                        ((Map.Entry<String, ScoreData>)entry).getValue().getScore()).reversed())
+                .map(Map.Entry::getKey)
+                .limit(n)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<String> getMostNegativeWords(int n) {
-        return reviewWordsRepository.getMostNegativeWords(n);
+        assertParameterIsNotNegative(n);
+
+        return reviewWords.entrySet()
+                .stream()
+                .sorted(Comparator.comparingDouble(entry -> entry.getValue().getScore()))
+                .map(Map.Entry::getKey)
+                .limit(n)
+                .collect(Collectors.toList());
     }
 
     @Override
     public boolean appendReview(String review, int sentiment) {
-        return false;
+        assertStringIsValid(review);
+        assertSentimentValueIsInBounds(sentiment);
+
+        try {
+            String lineToWrite = sentiment + " " + review.strip() + System.lineSeparator();
+            reviewsOut.append(lineToWrite);
+            reviewsOut.flush();
+            List<String> reviewContent = List.of(review.split(WORD_SEPARATOR_REGEX));
+            ReviewWordsFactory.updateCollection(reviewWords, stopwords, reviewContent, sentiment);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public int getSentimentDictionarySize() {
-        return reviewWordsRepository.getSentimentDictionarySize();
+        return reviewWords.keySet().size();
     }
 
     @Override
     public boolean isStopWord(String word) {
-        return stopwords.contains(word);
+        return stopwords.contains(word.toLowerCase().strip());
+    }
+
+    private void assertParameterIsNotNegative(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("Invalid argument!");
+        }
+    }
+
+    private void assertStringIsValid(String string) {
+        if (string == null || string.isBlank()) {
+            throw new IllegalArgumentException("Invalid review argument!");
+        }
+    }
+
+    private void assertSentimentValueIsInBounds(int sentiment) {
+        if (sentiment < SENTIMENT_LOWER_BOUNDARY || sentiment > SENTIMENT_UPPER_BOUNDARY) {
+            throw new IllegalArgumentException("Invalid sentiment value!");
+        }
     }
 }
