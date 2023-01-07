@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,10 +39,12 @@ public class ReviewWordsFactory {
     public static void updateCollection(Map<String, ScoreData> collection, Set<String> stopwords,
                                         List<String> reviewContent, int sentiment) {
 
+        Set<String> uniqueWordsInReview = new HashSet<>();
         for (String word : reviewContent) {
 
             String lowerCaseWord = word.strip().toLowerCase();
-            if (Pattern.matches(WORD_REGEX, lowerCaseWord) && !stopwords.contains(lowerCaseWord)) {
+            if (Pattern.matches(WORD_REGEX, lowerCaseWord) && !stopwords.contains(lowerCaseWord)
+                    && !uniqueWordsInReview.contains(lowerCaseWord)) {
 
                 ScoreData scoreData = collection.get(lowerCaseWord);
                 if (scoreData == null) {
@@ -49,6 +52,8 @@ public class ReviewWordsFactory {
                 } else {
                     scoreData.updateScore(sentiment);
                 }
+
+                uniqueWordsInReview.add(lowerCaseWord);
             }
         }
     }

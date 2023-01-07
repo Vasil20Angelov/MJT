@@ -30,17 +30,6 @@ public class ReviewWordsFactoryTest {
         };
     }
 
-    public static StringReader getSampleReader() {
-        String content = """
-                4 One of the best movie ever.
-                3 A nice moViE.
-                2 Below average
-                0 The worst movie ever
-                """;
-
-        return new StringReader(content);
-    }
-
     @Test
     public void testCreateWithoutUpdatingApplied() {
         String content = """
@@ -68,8 +57,15 @@ public class ReviewWordsFactoryTest {
 
     @Test
     public void testCreateWithUpdatingApplied() {
+        String content = """
+                4 One of the best movie ever.
+                3 A nice moViE.
+                2 Below average
+                0 The worst movie ever
+                """;
+
         Map<String, ScoreData> actual;
-        try (StringReader reader = getSampleReader()) {
+        try (StringReader reader = new StringReader(content)) {
             actual = ReviewWordsFactory.create(reader, getSampleStopwords());
         }
 
@@ -93,7 +89,31 @@ public class ReviewWordsFactoryTest {
     }
 
     @Test
-    public void testUpdateScore() {
+    public void testCreateWithDataThatContainsSameWordMultipleTimesInOneReview() {
+        String content = """
+                4 good, awesome,  good
+                3 good
+                4 awesome, awesome
+                1 awesome
+                """;
+
+        Map<String, ScoreData> actual;
+        try (StringReader reader = new StringReader(content)) {
+            actual = ReviewWordsFactory.create(reader, getSampleStopwords());
+        }
+
+        assertEquals(3.5, actual.get("good").getScore(),
+                "Wrongly calculated words score!");
+        assertEquals(3, actual.get("awesome").getScore(),
+                "Wrongly calculated words score!");
+        assertEquals(2, actual.get("good").getOccurrences(),
+                "Wrongly calculated words occurrences!");
+        assertEquals(3, actual.get("awesome").getOccurrences(),
+                "Wrongly calculated words occurrences!");
+    }
+
+    @Test
+    public void testUpdateCollection() {
         String content = """
                 4 One of the best movies
                 3 New movie
