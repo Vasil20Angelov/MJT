@@ -1,6 +1,5 @@
 package bg.sofia.uni.fmi.mjt.sentiment.utils.factories;
 
-import bg.sofia.uni.fmi.mjt.sentiment.utils.factories.StopwordsFactory;
 import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;

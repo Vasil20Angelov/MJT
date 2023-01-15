@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -116,14 +115,7 @@ public class MovieReviewSentimentAnalyzerTest {
 
     @Test
     public void testGetMostFrequentWordsReturnsCorrectResult() {
-        List<String> expected = new ArrayList<>() {
-            {
-                add("movie");
-                add("better");
-                add("ever");
-            }
-        };
-
+        List<String> expected = List.of("movie", "better", "ever");
         assertIterableEquals(expected, reviewsAnalyzer.getMostFrequentWords(3),
                 "Unexpected returned order!");
     }
@@ -136,19 +128,8 @@ public class MovieReviewSentimentAnalyzerTest {
 
     @Test
     public void testGetMostPositiveWordsReturnsCorrectResult() {
-        List<String> expected = new ArrayList<>() {
-            {
-                add("amazing");
-                add("plot");
-                add("made");
-                add("great");
-                add("exciting");
-                add("spectacular");
-                add("best");
-                add("one");
-                add("nice");
-            }
-        };
+        List<String> expected =
+                List.of("amazing", "plot", "made", "great", "exciting", "spectacular", "best", "one", "nice");
 
         List<String> actual = reviewsAnalyzer.getMostPositiveWords(9);
 
@@ -165,17 +146,7 @@ public class MovieReviewSentimentAnalyzerTest {
 
     @Test
     public void testGetMostNegativeWordsReturnsCorrectResult() {
-        List<String> expected = new ArrayList<>() {
-            {
-                add("worst");
-                add("never");
-                add("will");
-                add("awful");
-                add("watched");
-                add("movies");
-                add("average");
-            }
-        };
+        List<String> expected = List.of("worst", "never", "will", "awful", "watched", "movies", "average");
 
         List<String> actual = reviewsAnalyzer.getMostNegativeWords(7);
 

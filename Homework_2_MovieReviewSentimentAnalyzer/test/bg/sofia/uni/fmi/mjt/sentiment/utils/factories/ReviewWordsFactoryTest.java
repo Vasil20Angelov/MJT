@@ -106,10 +106,10 @@ public class ReviewWordsFactoryTest {
                 "Wrongly calculated words score!");
         assertEquals(3, actual.get("awesome").getScore(),
                 "Wrongly calculated words score!");
-        assertEquals(2, actual.get("good").getOccurrences(),
-                "Wrongly calculated words occurrences!");
-        assertEquals(3, actual.get("awesome").getOccurrences(),
-                "Wrongly calculated words occurrences!");
+        assertEquals(3, actual.get("good").getTotalOccurrences(),
+                "Wrongly calculated words total occurrences!");
+        assertEquals(4, actual.get("awesome").getTotalOccurrences(),
+                "Wrongly calculated words total occurrences!");
     }
 
     @Test

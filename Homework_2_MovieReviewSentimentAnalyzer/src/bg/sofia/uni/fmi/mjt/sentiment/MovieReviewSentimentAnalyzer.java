@@ -12,7 +12,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static bg.sofia.uni.fmi.mjt.sentiment.utils.factories.ReviewWordsFactory.WORD_SEPARATOR_REGEX;
 
@@ -30,6 +29,7 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
 
     private static final int SENTIMENT_LOWER_BOUNDARY = 0;
     private static final int SENTIMENT_UPPER_BOUNDARY = 4;
+    private static final int MISSING_SENTIMENT_SCORE = -1;
 
     private final Set<String> stopwords;
     private final Map<String, ScoreData> reviewWords;
@@ -45,7 +45,7 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
     @Override
     public double getReviewSentiment(String review) {
         if (review == null) {
-            return -1;
+            return MISSING_SENTIMENT_SCORE;
         }
 
         double score = 0.0;
@@ -60,13 +60,13 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
             }
         }
 
-        return nonStopwords != 0 ? score / nonStopwords : -1;
+        return nonStopwords != 0 ? score / nonStopwords : MISSING_SENTIMENT_SCORE;
     }
 
     @Override
     public String getReviewSentimentAsName(String review) {
         int roundedValue = (int) Math.round(getReviewSentiment(review));
-        if (roundedValue == -1) {
+        if (roundedValue == MISSING_SENTIMENT_SCORE) {
             return "unknown";
         }
 
@@ -76,11 +76,11 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
     @Override
     public double getWordSentiment(String word) {
         if (word == null) {
-            return -1;
+            return MISSING_SENTIMENT_SCORE;
         }
 
         ScoreData scoreData = reviewWords.get(word.strip().toLowerCase());
-        return scoreData == null ? -1 : scoreData.getScore();
+        return scoreData == null ? MISSING_SENTIMENT_SCORE : scoreData.getScore();
     }
 
     @Override
@@ -94,7 +94,7 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
             return 0;
         }
 
-        return reviewWords.get(word).getOccurrences();
+        return reviewWords.get(word).getTotalOccurrences();
     }
 
     @Override
@@ -104,10 +104,10 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
         return reviewWords.entrySet()
                 .stream()
                 .sorted(Comparator.comparingInt(entry ->
-                        ((Map.Entry<String, ScoreData>)entry).getValue().getOccurrences()).reversed())
+                        ((Map.Entry<String, ScoreData>)entry).getValue().getTotalOccurrences()).reversed())
                 .map(Map.Entry::getKey)
                 .limit(n)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -120,7 +120,7 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
                         ((Map.Entry<String, ScoreData>)entry).getValue().getScore()).reversed())
                 .map(Map.Entry::getKey)
                 .limit(n)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -132,7 +132,7 @@ public class MovieReviewSentimentAnalyzer implements SentimentAnalyzer {
                 .sorted(Comparator.comparingDouble(entry -> entry.getValue().getScore()))
                 .map(Map.Entry::getKey)
                 .limit(n)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

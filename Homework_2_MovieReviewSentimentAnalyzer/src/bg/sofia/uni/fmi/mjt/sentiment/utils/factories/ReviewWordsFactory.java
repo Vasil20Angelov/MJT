@@ -19,8 +19,9 @@ public class ReviewWordsFactory {
 
     public static Map<String, ScoreData> create(Reader reader, Set<String> stopwords) {
         Map<String, ScoreData> words = new HashMap<>();
-        try (BufferedReader bufferedReader = new BufferedReader(reader)) {
+        BufferedReader bufferedReader = new BufferedReader(reader);
 
+        try {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 List<String> lineContent = List.of(line.split(WORD_SEPARATOR_REGEX));
@@ -28,7 +29,6 @@ public class ReviewWordsFactory {
 
                 updateCollection(words, stopwords, lineContent.subList(1, lineContent.size()), sentimentScore);
             }
-
         } catch (IOException e) {
             throw new RuntimeException("Error occurred while reading the file!", e);
         }
@@ -43,17 +43,22 @@ public class ReviewWordsFactory {
         for (String word : reviewContent) {
 
             String lowerCaseWord = word.strip().toLowerCase();
-            if (Pattern.matches(WORD_REGEX, lowerCaseWord) && !stopwords.contains(lowerCaseWord)
-                    && !uniqueWordsInReview.contains(lowerCaseWord)) {
+            if (Pattern.matches(WORD_REGEX, lowerCaseWord) && !stopwords.contains(lowerCaseWord)) {
 
                 ScoreData scoreData = collection.get(lowerCaseWord);
-                if (scoreData == null) {
-                    collection.put(lowerCaseWord, new ScoreData(sentiment));
-                } else {
-                    scoreData.updateScore(sentiment);
-                }
+                if (!uniqueWordsInReview.contains(lowerCaseWord)) {
 
-                uniqueWordsInReview.add(lowerCaseWord);
+                    if (scoreData == null) {
+                        collection.put(lowerCaseWord, new ScoreData(sentiment));
+                    } else {
+                        scoreData.updateScore(sentiment);
+                    }
+
+                    uniqueWordsInReview.add(lowerCaseWord);
+                }
+                else {
+                    scoreData.addOccurrence();
+                }
             }
         }
     }
