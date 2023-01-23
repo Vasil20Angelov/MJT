@@ -14,7 +14,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class NewsClient {
-    private static final String DEFAULT_KEY = "e7db9eae4f3f401f9b9a66e4f8e8871a";
+    private static final String DEFAULT_KEY = "Get key from: https://newsapi.org//register";
 
     private static final String API_KEY = "&apiKey=";
     private static final String API_ENDPOINT_SCHEME = "https";
