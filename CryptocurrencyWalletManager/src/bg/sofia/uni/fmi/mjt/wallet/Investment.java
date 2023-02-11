@@ -1,8 +1,10 @@
 package bg.sofia.uni.fmi.mjt.wallet;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.Objects;
 
-public record Investment(double amount, double price) {
+public record Investment(@Expose double amount, @Expose double price) {
 
     private static final double DELTA = 0.000001;
 

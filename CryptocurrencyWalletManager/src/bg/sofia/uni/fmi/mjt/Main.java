@@ -9,10 +9,12 @@ import java.net.http.HttpClient;
 
 public class Main {
     public static void main(String[] args) {
+
         CoinClient coinClient = new CoinClient(HttpClient.newBuilder().build());
+        final String filePath = "./data/database.txt";
 
-
-        Server server = new Server(7777, coinClient, new CommandExecutor(new AccountsManager("SHA-256")));
+        AccountsManager accountsManager = new AccountsManager("SHA-256", filePath);
+        Server server = new Server(7778, coinClient, new CommandExecutor(accountsManager));
         server.start();
     }
 }

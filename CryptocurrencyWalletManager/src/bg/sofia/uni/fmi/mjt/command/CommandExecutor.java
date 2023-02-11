@@ -8,6 +8,7 @@ import bg.sofia.uni.fmi.mjt.exceptions.AuthorizationException;
 import bg.sofia.uni.fmi.mjt.exceptions.CryptoNotFoundException;
 import bg.sofia.uni.fmi.mjt.exceptions.InsufficientAmountException;
 import bg.sofia.uni.fmi.mjt.exceptions.TakenUsernameException;
+import bg.sofia.uni.fmi.mjt.exceptions.UsedAccountException;
 import bg.sofia.uni.fmi.mjt.exceptions.WeakPasswordException;
 import bg.sofia.uni.fmi.mjt.wallet.CryptoWallet;
 import bg.sofia.uni.fmi.mjt.wallet.Wallet;
@@ -30,11 +31,11 @@ public class CommandExecutor {
         this.accountsManager = accountsManager;
     }
 
-    public AccountsManager getAccountsManager() {
-        return accountsManager;
-    }
-
     public Account authorize(Command userCommand) throws AuthorizationException {
+        if (userCommand == null) {
+            throw new IllegalArgumentException("Invalid command!");
+        }
+
         Account account;
         try {
             switch (userCommand.command()) {
@@ -45,6 +46,7 @@ public class CommandExecutor {
         } catch (AccountNotFoundException
                  | TakenUsernameException
                  | WeakPasswordException
+                 | UsedAccountException
                  | IllegalArgumentException e) {
 
             throw new AuthorizationException(e.getMessage());
@@ -53,19 +55,33 @@ public class CommandExecutor {
         return account;
     }
 
-    private Account login(List<String> parameters) throws AccountNotFoundException {
+    private Account login(List<String> parameters) throws AccountNotFoundException, UsedAccountException {
         assertCorrectNumberOfParameters(ENTERING_SYSTEM_COMMANDS_PARAMETERS_COUNT, parameters.size());
-        return accountsManager.login(parameters.get(0), parameters.get(1));
+        Account account = accountsManager.login(parameters.get(0), parameters.get(1));
+
+        if (account.isAlreadyLoggedIn()) {
+            throw new UsedAccountException("There is already a user logged in that account!");
+        }
+        account.changeLoggedInState();
+
+        return account;
     }
 
     private Account register(List<String> parameters, Wallet wallet)
             throws TakenUsernameException, WeakPasswordException {
 
         assertCorrectNumberOfParameters(ENTERING_SYSTEM_COMMANDS_PARAMETERS_COUNT, parameters.size());
-        return accountsManager.register(parameters.get(0), parameters.get(1), wallet);
+        Account account = accountsManager.register(parameters.get(0), parameters.get(1), wallet);
+        account.changeLoggedInState();
+        accountsManager.persistData();
+
+        return account;
     }
 
     public String execute(Command command, Wallet wallet, Map<String, Asset> assets) {
+        if (command == null) {
+            throw new IllegalArgumentException("Invalid command!");
+        }
 
         String output;
         try {
@@ -95,6 +111,7 @@ public class CommandExecutor {
         double money = parseNumber(parameters.get(0));
         wallet.depositMoney(money);
 
+        accountsManager.persistData();
         return String.format("Your balance is now %.2f$", wallet.getBalance());
     }
 
@@ -116,6 +133,7 @@ public class CommandExecutor {
         Asset asset = getAsset(assetID, assets);
         double boughtAmount = wallet.buyAsset(assetID, asset.getPrice(), money);
 
+        accountsManager.persistData();
         return String.format("Successfully bought %s of %s!", boughtAmount, assetID);
     }
 
@@ -132,6 +150,7 @@ public class CommandExecutor {
         Asset asset = getAsset(assetID, assets);
         double earnings = wallet.sellAsset(assetID, asset.getPrice());
 
+        accountsManager.persistData();
         return String.format("Successfully earned %.2f from selling your %s!", earnings, assetID);
     }
 
@@ -151,10 +170,6 @@ public class CommandExecutor {
 
     private String walletSummary(List<String> parameters, Wallet wallet) {
         assertCorrectNumberOfParameters(DEFAULT_COMMAND_PARAMETERS_COUNT, parameters.size());
-
-        for (int i = 0; i < 1_000_000; i++) {
-            System.out.println(i);
-        }
 
         return wallet.getWalletInfo();
     }
@@ -179,12 +194,12 @@ public class CommandExecutor {
                 sell --offering=[offeringCode]
                 get-wallet-summary
                 get-wallet-overall-summary
-                exit/disconnect
+                exit
                 """;
     }
 
     public void saveData() {
-        accountsManager.saveAccounts();
+        accountsManager.persistData();
     }
 
     private String getParameter(List<String> parameters, String searched) {

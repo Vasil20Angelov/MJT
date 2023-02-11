@@ -2,6 +2,8 @@ package bg.sofia.uni.fmi.mjt.dto;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 public class Asset {
 
     private static final int CRYPTO_CODE = 1;
@@ -35,5 +37,18 @@ public class Asset {
 
     public boolean isCrypto() {
         return assetType == CRYPTO_CODE;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Asset asset = (Asset) o;
+        return Double.compare(asset.price, price) == 0 && assetType == asset.assetType && Objects.equals(id, asset.id) && Objects.equals(name, asset.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, price, assetType);
     }
 }

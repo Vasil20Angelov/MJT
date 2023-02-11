@@ -36,7 +36,7 @@ public enum CommandType {
             case "get-wallet-summary" -> WALLET_SUMMARY;
             case "get-wallet-overall-summary" -> WALLET_OVERALL;
             case "help" -> HELP;
-            case "exit", "disconnect" -> EXIT;
+            case "exit" -> EXIT;
             default -> throw new InvalidCommandException(command + " is not a valid command!");
         };
     }

@@ -10,7 +10,6 @@ import bg.sofia.uni.fmi.mjt.exceptions.AuthorizationException;
 import bg.sofia.uni.fmi.mjt.exceptions.InvalidCommandException;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -19,6 +18,10 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,6 +30,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Server {
+    private static final Path LOGGER = Path.of("./log.txt");
     private static final int BUFFER_SIZE = 2048;
     private static final String HOST = "localhost";
     private static final int MAX_CACHED_TIME_IN_MINUTES = 30;
@@ -40,7 +44,7 @@ public class Server {
     private Selector selector;
     private final CoinClient coinClient;
     private final Map<SocketAddress, Account> accounts = new HashMap<>();
-    private Map<String, Asset> assetMap = new HashMap<>();
+    private Map<String, Asset> assetMap;
 
     public Server(int port, CoinClient coinClient, CommandExecutor commandExecutor) {
         this.port = port;
@@ -52,11 +56,12 @@ public class Server {
         try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
              ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);) {
 
-            serverSocketChannel.configureBlocking(false);
-            executor.scheduleAtFixedRate(this::loadAssetMap, 30, 60, TimeUnit.SECONDS);
+            //executor.scheduleAtFixedRate(this::loadAssetMap, 0, MAX_CACHED_TIME_IN_MINUTES, TimeUnit.MINUTES);
+            executor.scheduleAtFixedRate(this::load, 30, 60, TimeUnit.SECONDS);
             selector = Selector.open();
             configureServerSocketChannel(serverSocketChannel, selector);
             this.buffer = ByteBuffer.allocate(BUFFER_SIZE);
+
             isServerWorking = true;
             while (isServerWorking) {
                 try {
@@ -69,28 +74,7 @@ public class Server {
                     while (keyIterator.hasNext()) {
                         SelectionKey key = keyIterator.next();
                         if (key.isReadable()) {
-                            SocketChannel clientChannel = (SocketChannel) key.channel();
-                            String clientInput = getClientInput(clientChannel);
-                            System.out.println(clientInput);
-                            if (clientInput == null) {
-                                continue;
-                            }
-
-                            Command userCommand;
-                            try {
-                                userCommand = Command.of(clientInput);
-                            } catch (InvalidCommandException e) {
-                                writeClientOutput(clientChannel, e.getMessage());
-                                keyIterator.remove();
-                                continue;
-                            }
-
-                            Account account = getAccount(clientChannel, userCommand);
-                            if (account != null && !userCommand.isEntryCommand()) {
-                                String output = commandExecutor.execute(userCommand, account.getWallet(), assetMap);
-                                writeClientOutput(clientChannel, output);
-                            }
-
+                            handleClientRequest(key);
                         } else if (key.isAcceptable()) {
                             accept(selector, key);
                         }
@@ -98,11 +82,11 @@ public class Server {
                         keyIterator.remove();
                     }
                 } catch (IOException e) {
-                    System.out.println("Error occurred while processing client request: " + e.getMessage());
+                    logException(e, "Error occurred while processing client request: ");
                 }
             }
         } catch (IOException e) {
-            throw new UncheckedIOException("failed to start server", e);
+            logException(e, "Server is down!");
         } finally {
             commandExecutor.saveData();
         }
@@ -119,6 +103,29 @@ public class Server {
         channel.bind(new InetSocketAddress(HOST, this.port));
         channel.configureBlocking(false);
         channel.register(selector, SelectionKey.OP_ACCEPT);
+    }
+
+    private void handleClientRequest(SelectionKey key) throws IOException {
+        SocketChannel clientChannel = (SocketChannel) key.channel();
+        String clientInput = getClientInput(clientChannel);
+        System.out.println(clientInput);
+        if (clientInput == null) {
+            return;
+        }
+
+        Command userCommand;
+        try {
+            userCommand = Command.of(clientInput);
+        } catch (InvalidCommandException e) {
+            writeClientOutput(clientChannel, e.getMessage());
+            return;
+        }
+
+        Account account = getAccount(clientChannel, userCommand);
+        if (account != null && !userCommand.isEntryCommand()) {
+            String output = commandExecutor.execute(userCommand, account.getWallet(), assetMap);
+            writeClientOutput(clientChannel, output);
+        }
     }
 
     private String getClientInput(SocketChannel clientChannel) throws IOException {
@@ -158,6 +165,9 @@ public class Server {
         Account account = accounts.get(clientChannel.getRemoteAddress());
         if (account == null) {
 
+            if (userCommand.command() == CommandType.EXIT) {
+                return null;
+            }
             if (userCommand.command() == CommandType.HELP) {
                 writeClientOutput(clientChannel, commandExecutor.help(userCommand.arguments()));
                 return null;
@@ -173,7 +183,11 @@ public class Server {
             accounts.put(clientChannel.getRemoteAddress(), account);
             writeClientOutput(clientChannel, "Successfully logged in!");
 
-        } else if (userCommand.isEntryCommand()) {
+        } else if (userCommand.command() == CommandType.EXIT) {
+            account.changeLoggedInState();
+            return null;
+        }
+        else if (userCommand.isEntryCommand()) {
             writeClientOutput(clientChannel, "Cannot execute that operation!");
         }
 
@@ -181,10 +195,34 @@ public class Server {
     }
 
     private synchronized void loadAssetMap() {
-        assetMap.clear();
-        coinClient.getOfferingsList()
-                .stream()
-                .filter(Asset::isCrypto)
-                .forEach(x -> assetMap.put(x.getId(), x));
+        Map<String, Asset> newInfo = new HashMap<>();
+        try {
+            coinClient.getOfferingsList()
+                    .stream()
+                    .filter(Asset::isCrypto)
+                    .forEach(x -> newInfo.put(x.getId(), x));
+        } catch (RuntimeException e) {
+            logException(e, "Error from CoinClient: ");
+        }
+
+        assetMap = newInfo;
+    }
+
+    private void logException(Exception e, String baseMessage) {
+        String errorMessage = baseMessage
+                + System.lineSeparator()
+                + e.getMessage()
+                + Arrays.toString(e.getStackTrace())
+                + System.lineSeparator();
+
+        try {
+            Files.writeString(LOGGER, errorMessage, StandardOpenOption.APPEND);
+        } catch (IOException ex) {
+            System.err.println("Couldn't log an error!");
+        }
+    }
+
+    private void load() {
+        assetMap = new HashMap<>();
     }
 }

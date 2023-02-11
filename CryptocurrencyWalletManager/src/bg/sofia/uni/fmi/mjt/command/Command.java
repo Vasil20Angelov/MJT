@@ -30,13 +30,6 @@ public record Command(CommandType command, List<String> arguments) {
         return new Command(command, arguments);
     }
 
-//    public boolean commandRequiresApiInfo() {
-//        return command == CommandType.LIST
-//                || command == CommandType.BUY
-//                || command == CommandType.SELL
-//                || command == CommandType.WALLET_OVERALL;
-//    }
-
     public boolean isEntryCommand() {
         return command == CommandType.REGISTER || command == CommandType.LOGIN;
     }

@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.mjt.wallet;
 import bg.sofia.uni.fmi.mjt.dto.Asset;
 import bg.sofia.uni.fmi.mjt.exceptions.CryptoNotFoundException;
 import bg.sofia.uni.fmi.mjt.exceptions.InsufficientAmountException;
+import com.google.gson.annotations.Expose;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +14,9 @@ import java.util.Objects;
 
 public class CryptoWallet implements Wallet {
     private static final double INITIAL_BALANCE = 0.0d;
+    @Expose
     private double balance;
+    @Expose
     private final Map<String, List<Investment>> activeInvestments;
 
     public CryptoWallet() {

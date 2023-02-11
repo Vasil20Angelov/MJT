@@ -22,11 +22,13 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class CommandExecutorTest {
-
     @Mock
     private final AccountsManager accountsManagerMock = Mockito.mock(AccountsManager.class);
 
@@ -34,6 +36,12 @@ public class CommandExecutorTest {
     private final Wallet walletMock = Mockito.mock(Wallet.class);
 
     private final CommandExecutor commandExecutor = new CommandExecutor(accountsManagerMock);
+
+    @Test
+    public void testAuthorizeWithNullCommand() {
+        assertThrows(IllegalArgumentException.class, () -> commandExecutor.authorize(null),
+                "Expected IllegalArgumentException to be thrown when the given command is null!");
+    }
 
     @Test
     public void testAuthorizeWithNonEntryCommand() {
@@ -63,10 +71,13 @@ public class CommandExecutorTest {
         Account expected = new Account(username, password, wallet);
 
         when(accountsManagerMock.register(username, password, wallet)).thenReturn(expected);
+        doNothing().when(accountsManagerMock).persistData();
 
         Account result = commandExecutor.authorize(command);
 
-        assertEquals(expected, result);
+        assertEquals(expected, result, "Unexpected account returned!");
+        assertTrue(result.isAlreadyLoggedIn(), "The account must be marked as loggedIn!");
+        verify(accountsManagerMock, times(1)).persistData();
     }
 
     @Test
@@ -75,6 +86,22 @@ public class CommandExecutorTest {
 
         assertThrows(AuthorizationException.class, () -> commandExecutor.authorize(command),
                 "Expected AuthorizationException to be thrown when the passed arguments are unexpected!");
+    }
+
+    @Test
+    public void testAuthorizeExecutesLoginWhenTryingToLogInAccountThatIsBeingUsed() throws AccountNotFoundException {
+        String username = "a1";
+        String password = "123456";
+        Wallet wallet = new CryptoWallet();
+
+        Command command = new Command(CommandType.LOGIN, List.of(username, password));
+        Account account = new Account(username, password, wallet);
+        account.changeLoggedInState();
+
+        when(accountsManagerMock.login(username, password)).thenReturn(account);
+
+        assertThrows(AuthorizationException.class, () -> commandExecutor.authorize(command),
+                "Expected AuthorizationException to be thrown when someone else is using the account!");
     }
 
     @Test
@@ -90,7 +117,15 @@ public class CommandExecutorTest {
 
         Account result = commandExecutor.authorize(command);
 
-        assertEquals(expected, result);
+        assertEquals(expected, result, "Unexpected account returned!");
+        assertTrue(result.isAlreadyLoggedIn(), "The account must be marked as loggedIn!");
+    }
+
+    @Test
+    public void testExecuteWithNullCommand() {
+        assertThrows(IllegalArgumentException.class,
+                () -> commandExecutor.execute(null, null, null),
+                "Expected IllegalArgumentException to be thrown when the given command is null!");
     }
 
     @Test
@@ -136,10 +171,12 @@ public class CommandExecutorTest {
 
         doNothing().when(walletMock).depositMoney(12.5);
         when(walletMock.getBalance()).thenReturn(30d);
+        doNothing().when(accountsManagerMock).persistData();
 
         String output = commandExecutor.execute(command, walletMock, null);
 
         assertEquals("Your balance is now 30,00$", output, "Unexpected output returned!");
+        verify(accountsManagerMock, times(1)).persistData();
     }
 
     @Test
@@ -216,9 +253,12 @@ public class CommandExecutorTest {
         Map<String, Asset> assets = Map.of("BTC", new Asset("BTC", "Bitcoin", 46.3, 1));
 
         when(walletMock.buyAsset("BTC", 46.3, 23.15)).thenReturn(0.5d);
+        doNothing().when(accountsManagerMock).persistData();
+
         String output = commandExecutor.execute(command, walletMock, assets);
 
         assertEquals("Successfully bought 0.5 of BTC!", output, "Unexpected output returned!");
+        verify(accountsManagerMock, times(1)).persistData();
     }
 
     @Test
@@ -264,10 +304,13 @@ public class CommandExecutorTest {
         Map<String, Asset> assets = Map.of("BTC", new Asset("BTC", "Bitcoin", 46.3, 1));
 
         when(walletMock.sellAsset("BTC", 46.3)).thenReturn(12.432);
+        doNothing().when(accountsManagerMock).persistData();
+
         String output = commandExecutor.execute(command, walletMock, assets);
 
         assertEquals("Successfully earned 12,43 from selling your BTC!", output,
                 "Unexpected output returned!");
+        verify(accountsManagerMock, times(1)).persistData();
     }
 
     @Test
@@ -382,11 +425,19 @@ public class CommandExecutorTest {
                 sell --offering=[offeringCode]
                 get-wallet-summary
                 get-wallet-overall-summary
-                exit/disconnect
+                exit
                 """;
 
         String output = commandExecutor.execute(command, null, null);
 
         assertEquals(expected, output, "Unexpected output returned!");
+    }
+
+    @Test
+    public void testSaveData() {
+        doNothing().when(accountsManagerMock).persistData();
+        commandExecutor.saveData();
+
+        verify(accountsManagerMock, times(1)).persistData();
     }
 }
