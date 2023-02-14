@@ -69,9 +69,8 @@ public class AccountsManager {
     }
 
     public Account login(String username, String password) throws AccountNotFoundException {
-        if (username == null || password == null) {
-            throw new IllegalArgumentException("Invalid username or password!");
-        }
+        validateString(username, "Invalid username or password!");
+        validateString(password, "Invalid username or password!");
 
         Account account = accounts.get(username);
         String encryptedPassword = encryptPassword(password);

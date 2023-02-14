@@ -26,6 +26,10 @@ public enum CommandType {
 
     public static CommandType of(String command) {
 
+        if (command == null) {
+            throw new InvalidCommandException("Invalid command!");
+        }
+
         return switch (command.toLowerCase()) {
             case "login" -> LOGIN;
             case "register" -> REGISTER;

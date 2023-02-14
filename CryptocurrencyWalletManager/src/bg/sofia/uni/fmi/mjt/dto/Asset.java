@@ -44,7 +44,8 @@ public class Asset {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Asset asset = (Asset) o;
-        return Double.compare(asset.price, price) == 0 && assetType == asset.assetType && Objects.equals(id, asset.id) && Objects.equals(name, asset.name);
+        return Double.compare(asset.price, price) == 0 && assetType == asset.assetType
+                && Objects.equals(id, asset.id) && Objects.equals(name, asset.name);
     }
 
     @Override

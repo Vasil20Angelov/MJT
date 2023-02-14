@@ -34,7 +34,7 @@ public class Server {
     private static final int BUFFER_SIZE = 2048;
     private static final String HOST = "localhost";
     private static final int MAX_CACHED_TIME_IN_MINUTES = 30;
-
+    private static final int INITIAL_DELAY_TIME = 0;
     private final CommandExecutor commandExecutor;
 
     private final int port;
@@ -54,10 +54,11 @@ public class Server {
 
     public void start() {
         try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-             ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);) {
+             ScheduledExecutorService executor = Executors.newScheduledThreadPool(1)) {
 
-            //executor.scheduleAtFixedRate(this::loadAssetMap, 0, MAX_CACHED_TIME_IN_MINUTES, TimeUnit.MINUTES);
-            executor.scheduleAtFixedRate(this::load, 30, 60, TimeUnit.SECONDS);
+            executor.scheduleAtFixedRate(this::loadAssetMap, INITIAL_DELAY_TIME,
+                    MAX_CACHED_TIME_IN_MINUTES, TimeUnit.MINUTES);
+
             selector = Selector.open();
             configureServerSocketChannel(serverSocketChannel, selector);
             this.buffer = ByteBuffer.allocate(BUFFER_SIZE);
@@ -186,8 +187,7 @@ public class Server {
         } else if (userCommand.command() == CommandType.EXIT) {
             account.changeLoggedInState();
             return null;
-        }
-        else if (userCommand.isEntryCommand()) {
+        } else if (userCommand.isEntryCommand()) {
             writeClientOutput(clientChannel, "Cannot execute that operation!");
         }
 
@@ -220,9 +220,5 @@ public class Server {
         } catch (IOException ex) {
             System.err.println("Couldn't log an error!");
         }
-    }
-
-    private void load() {
-        assetMap = new HashMap<>();
     }
 }

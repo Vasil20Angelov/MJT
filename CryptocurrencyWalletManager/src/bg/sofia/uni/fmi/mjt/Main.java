@@ -11,10 +11,13 @@ public class Main {
     public static void main(String[] args) {
 
         CoinClient coinClient = new CoinClient(HttpClient.newBuilder().build());
-        final String filePath = "./data/database.txt";
 
-        AccountsManager accountsManager = new AccountsManager("SHA-256", filePath);
-        Server server = new Server(7778, coinClient, new CommandExecutor(accountsManager));
+        final int port = 7778;
+        final String databaseFilePath = "./data/database.txt";
+        final String hashingAlgorithm = "SHA-256";
+
+        AccountsManager accountsManager = new AccountsManager(hashingAlgorithm, databaseFilePath);
+        Server server = new Server(port, coinClient, new CommandExecutor(accountsManager));
         server.start();
     }
 }

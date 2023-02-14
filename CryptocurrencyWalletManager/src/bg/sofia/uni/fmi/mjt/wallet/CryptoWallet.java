@@ -14,6 +14,7 @@ import java.util.Objects;
 
 public class CryptoWallet implements Wallet {
     private static final double INITIAL_BALANCE = 0.0d;
+    private static final double DELTA = 0.0000000000001;
     @Expose
     private double balance;
     @Expose
@@ -148,9 +149,8 @@ public class CryptoWallet implements Wallet {
     }
 
     private void validateNumericValues(Double... values) {
-        final double delta = 0.00000000000000001;
         for (double value : values) {
-            if (value - delta <= 0.0) {
+            if (value - DELTA <= 0.0) {
                 throw new IllegalArgumentException("Any given number should be positive!");
             }
         }
