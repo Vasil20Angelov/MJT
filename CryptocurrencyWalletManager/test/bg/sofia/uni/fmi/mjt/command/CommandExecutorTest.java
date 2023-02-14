@@ -393,7 +393,7 @@ public class CommandExecutorTest {
     public void testExecuteWithWalletOverallCommandWithValidArguments()
     {
         Command command = new Command(CommandType.WALLET_OVERALL, new ArrayList<>());
-        Map<String, Asset> assetMap = new HashMap<>();
+        Map<String, Asset> assetMap = Map.of("a1", new Asset("a1", "aa1", 12, 1));
         when(walletMock.getWalletOverallStats(assetMap)).thenReturn("some info");
 
         String output = commandExecutor.execute(command, walletMock, assetMap);

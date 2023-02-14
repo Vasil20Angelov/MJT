@@ -129,7 +129,7 @@ public class CommandExecutor {
         String assetID = offeringParameter.substring(parameterOfferingPrefix.length());
         double money = parseNumber(moneyParameter.substring(parameterMoneyPrefix.length()));
 
-        assertAssetsMapIsNotNull(assets);
+        assertAssetsMapIsNotNullOrEmpty(assets);
         Asset asset = getAsset(assetID, assets);
         double boughtAmount = wallet.buyAsset(assetID, asset.getPrice(), money);
 
@@ -141,12 +141,14 @@ public class CommandExecutor {
             throws CryptoNotFoundException {
 
         assertCorrectNumberOfParameters(SELL_COMMAND_PARAMETERS_COUNT, parameters.size());
-        assertAssetsMapIsNotNull(assets);
 
         String parameterOfferingPrefix = ArgumentType.OFFERING.getArgument();
         String offeringParameter = getParameter(parameters, parameterOfferingPrefix);
 
         String assetID = offeringParameter.substring(parameterOfferingPrefix.length());
+
+        assertAssetsMapIsNotNullOrEmpty(assets);
+
         Asset asset = getAsset(assetID, assets);
         double earnings = wallet.sellAsset(assetID, asset.getPrice());
 
@@ -156,7 +158,7 @@ public class CommandExecutor {
 
     private String listOfferings(List<String> parameters, Map<String, Asset> assets) {
         assertCorrectNumberOfParameters(DEFAULT_COMMAND_PARAMETERS_COUNT, parameters.size());
-        assertAssetsMapIsNotNull(assets);
+        assertAssetsMapIsNotNullOrEmpty(assets);
 
         StringBuilder stringBuilder = new StringBuilder();
         assets.values()
@@ -176,7 +178,7 @@ public class CommandExecutor {
 
     private String walletSummaryOverall(List<String> parameters, Wallet wallet, Map<String, Asset> assets) {
         assertCorrectNumberOfParameters(DEFAULT_COMMAND_PARAMETERS_COUNT, parameters.size());
-        assertAssetsMapIsNotNull(assets);
+        assertAssetsMapIsNotNullOrEmpty(assets);
 
         return wallet.getWalletOverallStats(assets);
     }
@@ -215,8 +217,8 @@ public class CommandExecutor {
         }
     }
 
-    private void assertAssetsMapIsNotNull(Map<String, Asset> assets) {
-        if (assets == null) {
+    private void assertAssetsMapIsNotNullOrEmpty(Map<String, Asset> assets) {
+        if (assets == null || assets.isEmpty()) {
             throw new IllegalArgumentException("Stock exchange information is missing!");
         }
     }

@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class Client {
     private static final int SERVER_PORT = 7778;
     private static final String SERVER_HOST = "localhost";
-    private static final int BUFFER_SIZE = 1024;
+    private static final int BUFFER_SIZE = 2048;
 
     private static ByteBuffer buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
 

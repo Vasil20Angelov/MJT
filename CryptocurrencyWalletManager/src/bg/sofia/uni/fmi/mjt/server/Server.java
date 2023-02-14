@@ -9,6 +9,7 @@ import bg.sofia.uni.fmi.mjt.dto.Asset;
 import bg.sofia.uni.fmi.mjt.exceptions.AuthorizationException;
 import bg.sofia.uni.fmi.mjt.exceptions.InvalidCommandException;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -34,6 +35,7 @@ public class Server {
     private static final int BUFFER_SIZE = 2048;
     private static final String HOST = "localhost";
     private static final int MAX_CACHED_TIME_IN_MINUTES = 30;
+    private static final int WAIT_TIME_TO_TRY_RETRIEVE_INFO_ON_FAIL = 30000;
     private static final int INITIAL_DELAY_TIME = 0;
     private final CommandExecutor commandExecutor;
 
@@ -50,6 +52,13 @@ public class Server {
         this.port = port;
         this.coinClient = coinClient;
         this.commandExecutor = commandExecutor;
+
+        File file = LOGGER.toFile();
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            System.err.println("Couldn't create a logger file!");
+        }
     }
 
     public void start() {
@@ -203,6 +212,12 @@ public class Server {
                     .forEach(x -> newInfo.put(x.getId(), x));
         } catch (RuntimeException e) {
             logException(e, "Error from CoinClient: ");
+            try {
+                Thread.sleep(WAIT_TIME_TO_TRY_RETRIEVE_INFO_ON_FAIL);
+                loadAssetMap();
+            } catch (InterruptedException ex) {
+                logException(ex, "Trying to retrieve information has been suspended!");
+            }
         }
 
         assetMap = newInfo;

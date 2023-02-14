@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CoinClient {
-    private static final String API_KEY = "7090DEDA-123B-447B-8549-13E19984B6EC";
+    private static final String API_KEY = "Put your key here";
     private static final String API_ENDPOINT_SCHEME = "http";
     private static final String API_ENDPOINT_HOST = "rest.coinapi.io";
     private static final String API_ENDPOINT_PATH = "/v1/assets";
