@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.coinAPI;
+package bg.sofia.uni.fmi.mjt.coin.api;
 
 import bg.sofia.uni.fmi.mjt.dto.Asset;
 import bg.sofia.uni.fmi.mjt.exceptions.http.BadRequestException;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CoinClient {
-    private static final String API_KEY = "Put your key here";
+    private static final String API_KEY = "Put your api key here";
     private static final String API_ENDPOINT_SCHEME = "http";
     private static final String API_ENDPOINT_HOST = "rest.coinapi.io";
     private static final String API_ENDPOINT_PATH = "/v1/assets";

@@ -31,9 +31,9 @@ public class AccountManagerTest {
     private final static String password = "123456";
 
     @TempDir
-    Path tempDir;
+    private Path tempDir;
 
-    Path pathToFile;
+    private Path pathToFile;
 
     @Mock
     private final CryptoWallet cryptoWalletMock = Mockito.mock(CryptoWallet.class);

@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.server;
 
 import bg.sofia.uni.fmi.mjt.accounts.Account;
-import bg.sofia.uni.fmi.mjt.coinAPI.CoinClient;
+import bg.sofia.uni.fmi.mjt.coin.api.CoinClient;
 import bg.sofia.uni.fmi.mjt.command.Command;
 import bg.sofia.uni.fmi.mjt.command.CommandExecutor;
 import bg.sofia.uni.fmi.mjt.command.CommandType;
@@ -210,7 +210,9 @@ public class Server {
                     .stream()
                     .filter(Asset::isCrypto)
                     .forEach(x -> newInfo.put(x.getId(), x));
-        } catch (RuntimeException e) {
+            assetMap = newInfo;
+        } catch (Exception e) {
+            assetMap = null;
             logException(e, "Error from CoinClient: ");
             try {
                 Thread.sleep(WAIT_TIME_TO_TRY_RETRIEVE_INFO_ON_FAIL);
@@ -219,8 +221,6 @@ public class Server {
                 logException(ex, "Trying to retrieve information has been suspended!");
             }
         }
-
-        assetMap = newInfo;
     }
 
     private void logException(Exception e, String baseMessage) {

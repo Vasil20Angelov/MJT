@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt;
 
 import bg.sofia.uni.fmi.mjt.accounts.AccountsManager;
-import bg.sofia.uni.fmi.mjt.coinAPI.CoinClient;
+import bg.sofia.uni.fmi.mjt.coin.api.CoinClient;
 import bg.sofia.uni.fmi.mjt.command.CommandExecutor;
 import bg.sofia.uni.fmi.mjt.server.Server;
 

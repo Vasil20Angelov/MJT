@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.coinAPI;
+package bg.sofia.uni.fmi.mjt.coin.api;
 
 import bg.sofia.uni.fmi.mjt.dto.Asset;
 import bg.sofia.uni.fmi.mjt.exceptions.http.BadRequestException;
@@ -32,7 +32,7 @@ public class CoinClientTest {
     @Mock
     private HttpResponse<String> httpResponseMock = Mockito.mock(HttpResponse.class);
 
-    private CoinClient coinClient = new CoinClient(httpClientMock);
+    private final CoinClient coinClient = new CoinClient(httpClientMock);
 
     private String getSampleDataInJsonFormat() {
         return "[{\"asset_id\":\"BTC\",\"name\":\"Bitcoin\",\"price_usd\":43000.0,\"type_is_crypto\":1}," +
